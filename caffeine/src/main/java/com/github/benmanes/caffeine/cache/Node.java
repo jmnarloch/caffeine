@@ -120,9 +120,16 @@ interface Node<K, V> extends AccessOrder<Node<K, V>>, WriteOrder<Node<K, V>> {
 
   /* ---------------- Access order -------------- */
 
-  int EDEN = 0;
-  int PROBATION = 1;
-  int PROTECTED = 2;
+  int NONE = 0;
+  int EDEN = 1;
+  int PROBATION = 2;
+  int PROTECTED = 3;
+  int ZERO_WEIGHT = 4;
+
+  /** Returns if the entry is in no space. */
+  default boolean inNone() {
+    return getQueueType() == NONE;
+  }
 
   /** Returns if the entry is in the Eden or Main space. */
   default boolean inEden() {
@@ -139,6 +146,16 @@ interface Node<K, V> extends AccessOrder<Node<K, V>>, WriteOrder<Node<K, V>> {
     return getQueueType() == PROTECTED;
   }
 
+  /** Returns if the entry is in the zero weight queue. */
+  default boolean inZeroWeight() {
+    return getQueueType() == ZERO_WEIGHT;
+  }
+
+  /** Sets the status to the Eden space's queue. */
+  default void makeEden() {
+    setQueueType(EDEN);
+  }
+
   /** Sets the status to the Main space's probation queue. */
   default void makeMainProbation() {
     setQueueType(PROBATION);
@@ -147,6 +164,11 @@ interface Node<K, V> extends AccessOrder<Node<K, V>>, WriteOrder<Node<K, V>> {
   /** Sets the status to the Main space's protected queue. */
   default void makeMainProtected() {
     setQueueType(PROTECTED);
+  }
+
+  /** Sets the status to the zero weight queue. */
+  default void makeZeroWeight() {
+    setQueueType(ZERO_WEIGHT);
   }
 
   /** Returns the queue that the entry's resides in (eden, probation, or protected). */

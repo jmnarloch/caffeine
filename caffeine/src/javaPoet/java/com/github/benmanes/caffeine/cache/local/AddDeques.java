@@ -38,6 +38,7 @@ public final class AddDeques extends LocalCacheRule {
     addAccessOrderEdenDeque();
     addAccessOrderMainDeque();
     addWriteOrderDeque();
+    addZeroWeightDeque();
   }
 
   private void addAccessOrderEdenDeque() {
@@ -55,6 +56,14 @@ public final class AddDeques extends LocalCacheRule {
     }
     addDeque(ACCESS_ORDER_DEQUE, "accessOrderProbationDeque");
     addDeque(ACCESS_ORDER_DEQUE, "accessOrderProtectedDeque");
+  }
+
+  private void addZeroWeightDeque() {
+    if (context.parentFeatures.contains(Feature.MAXIMUM_WEIGHT)
+        || !context.generateFeatures.contains(Feature.MAXIMUM_WEIGHT)) {
+      return;
+    }
+    addDeque(ACCESS_ORDER_DEQUE, "accessOrderZeroWeightDeque");
   }
 
   private void addWriteOrderDeque() {

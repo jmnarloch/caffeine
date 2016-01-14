@@ -248,7 +248,7 @@ public final class BoundedLocalCacheTest {
   private static Node<Integer, Integer> firstBeforeAccess(
       BoundedLocalCache<Integer, Integer> localCache, CacheContext context) {
     return context.isZeroWeighted()
-        ? localCache.accessOrderEdenDeque().peek()
+        ? localCache.accessOrderZeroWeightDeque().peek()
         : localCache.accessOrderProbationDeque().peek();
   }
 
@@ -260,8 +260,8 @@ public final class BoundedLocalCacheTest {
     cache.maintenance();
 
     if (context.isZeroWeighted()) {
-      assertThat(cache.accessOrderEdenDeque().peekFirst(), is(not(first)));
-      assertThat(cache.accessOrderEdenDeque().peekLast(), is(first));
+      assertThat(cache.accessOrderZeroWeightDeque().peekFirst(), is(not(first)));
+      assertThat(cache.accessOrderZeroWeightDeque().peekLast(), is(first));
     } else {
       assertThat(cache.accessOrderProbationDeque().peekFirst(), is(not(first)));
       assertThat(cache.accessOrderProtectedDeque().peekLast(), is(first));
@@ -352,6 +352,9 @@ public final class BoundedLocalCacheTest {
 
     int size = localCache.accessOrderEdenDeque().size()
         + localCache.accessOrderProbationDeque().size();
+    if (localCache.isWeighted()) {
+      size += localCache.accessOrderZeroWeightDeque().size();
+    }
     assertThat(localCache.writeQueue(), hasSize(0));
     assertThat(size, is(1));
   }

@@ -69,9 +69,13 @@ final class CacheGenerator {
         .map(this::newCacheContext)
         .filter(this::isCompatible)
         .map(context -> {
-          Cache<Integer, Integer> cache = newCache(context);
-          populate(context, cache);
-          return Maps.immutableEntry(context, cache);
+          try {
+            Cache<Integer, Integer> cache = newCache(context);
+            populate(context, cache);
+            return Maps.immutableEntry(context, cache);
+          } catch (RuntimeException e) {
+            throw new RuntimeException(context.toString(), e);
+          }
         });
   }
 

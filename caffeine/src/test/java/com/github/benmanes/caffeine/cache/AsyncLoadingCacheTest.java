@@ -50,6 +50,7 @@ import com.github.benmanes.caffeine.cache.testing.CacheProvider;
 import com.github.benmanes.caffeine.cache.testing.CacheSpec;
 import com.github.benmanes.caffeine.cache.testing.CacheSpec.CacheExecutor;
 import com.github.benmanes.caffeine.cache.testing.CacheSpec.ExecutorFailure;
+import com.github.benmanes.caffeine.cache.testing.CacheSpec.Expire;
 import com.github.benmanes.caffeine.cache.testing.CacheSpec.Listener;
 import com.github.benmanes.caffeine.cache.testing.CacheSpec.Loader;
 import com.github.benmanes.caffeine.cache.testing.CacheSpec.Population;
@@ -519,7 +520,7 @@ public final class AsyncLoadingCacheTest {
   }
 
   @CheckNoWriter
-  @CacheSpec(loader = { Loader.EXCEPTIONAL, Loader.BULK_EXCEPTIONAL })
+  @CacheSpec(loader = { Loader.EXCEPTIONAL, Loader.BULK_EXCEPTIONAL }, refreshAfterWrite = Expire.FOREVER)
   @Test(dataProvider = "caches", expectedExceptions = ExecutionException.class)
   public void getAll_absent_failure(AsyncLoadingCache<Integer, Integer> cache,
       CacheContext context) throws Exception {

@@ -22,6 +22,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
@@ -108,10 +111,15 @@ public final class IsValidBoundedLocalCache<K, V>
 
   private void checkEvictionDeque(BoundedLocalCache<K, V> cache, DescriptionBuilder desc) {
     if (cache.evicts()) {
-      ImmutableList<LinkedDeque<Node<K, V>>> deques = ImmutableList.of(
+      List<LinkedDeque<Node<K, V>>> deques = new ArrayList<>(Arrays.asList(
           cache.accessOrderEdenDeque(),
           cache.accessOrderProbationDeque(),
-          cache.accessOrderProtectedDeque());
+          cache.accessOrderProtectedDeque()));
+      if (cache.isWeighted()) {
+        deques.add(cache.accessOrderZeroWeightDeque());
+        checkDeque(cache.accessOrderZeroWeightDeque(), desc);
+      }
+
       checkLinks(cache, deques, desc);
       checkDeque(cache.accessOrderEdenDeque(), desc);
       checkDeque(cache.accessOrderProbationDeque(), desc);
@@ -131,7 +139,7 @@ public final class IsValidBoundedLocalCache<K, V>
   }
 
   private void checkLinks(BoundedLocalCache<K, V> cache,
-      ImmutableList<LinkedDeque<Node<K, V>>> deques, DescriptionBuilder desc) {
+      List<LinkedDeque<Node<K, V>>> deques, DescriptionBuilder desc) {
     int size = 0;
     long weightedSize = 0;
     Set<Node<K, V>> seen = Sets.newIdentityHashSet();
